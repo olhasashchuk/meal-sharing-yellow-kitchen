@@ -24,22 +24,10 @@ apiRouter.get("/", async (req, res) => {
 });
 
 // This nested router example can also be replaced with your own sub-router
+app.use("/api", apiRouter);
 apiRouter.use("/nested", nestedRouter);
 apiRouter.use("/meals", mealsRouter);
 apiRouter.use("/reservations", reservationsRouter);
-
-
-app.use("/api", apiRouter);
-
-app.get("/all-meals", async (req, res) => {
-  const meals = await knex.raw("SELECT * FROM meal ORDER BY id ASC");
-  if (meals.length > 0) {
-      res.send(meals);
-  } else {
-      res.send([]);
-  }
-});
-
 
 app.listen(process.env.PORT, () => {
   console.log(`API listening on port ${process.env.PORT}`);

@@ -14,19 +14,40 @@ mealsRouter.get("/", async (req, res) => {
 });
 
 //Adds a new meal to the database
+const validParam = (meal) => {
+   const { title, description, location, max_reservations, price } = meal;
+   if(!title || typeof title !== "string") return ('Invalid title');
+   if(!description || typeof description !== "string") return ('Invalid description');
+   if(!location || typeof location !== "string") return ('Invalid location');
+   if(!location || typeof max_reservations !== "number") return ('Invalid max_reservations');
+   if(!location || typeof price !== "number") return ('Invalid price');
+
+   return null
+ }
+
+
 mealsRouter.post("/", async (req, res) => {
+   const validError = validParam(req.body);
+   const existedMeal = await knex("meal").where({ title: req.body.title }).first();
+   
    try {
+      if(validError) {
+         return res.status(404).json({ message: validError });
+      }
+      
+      if(existedMeal) {
+         return res.status(404).json({ message: 'Meal with this title was existed' });
+      }
+
       const [newMeal] = await knex('meal').insert(req.body);
       res.status(201).json(newMeal);
+      
    } catch (error) {
      res.status(500).json({ error: error.message });
    }
  });
 
-
 // Returns the meal by id
-
-
 mealsRouter.get("/:id", async (req, res) => {
    try {   
       const { id } = req.params;

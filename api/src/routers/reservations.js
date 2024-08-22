@@ -14,8 +14,28 @@ reservationsRouter.get("/", async (req, res) => {
 });
 
 //Adds a new reservation to the database
+const validParam = (reservation) => {
+   const { number_of_guests, contact_phonenumber, contact_name, contact_email } = reservation;
+   if(!number_of_guests || typeof number_of_guests !== "number") return ('Invalid number_of_guests');
+   if(!contact_phonenumber|| typeof contact_phonenumber !== "string") return ('Invalid contact_phonenumber');
+   if(!contact_name || typeof contact_name !== "string") return ('Invalid contact_name');
+   if(!contact_email || typeof contact_email !== "string") return ('Invalid contact_email');
+   return null
+ }
+
 reservationsRouter.post("/", async (req, res) => {
+   const validError = validParam(req.body);
+   const existedReservation = await knex('reservation').where({ contact_name: req.body.contact_name}).first()
+   
    try {
+      if (validError) {
+         return res.status(404).json({ message: validError });
+      }
+
+      if (existedReservation) {
+         return res.status(404).json( { message: 'Reservation with this contact of name was existed' });
+      }
+      
       const [newReservation] = await knex('reservation').insert(req.body);
       res.status(201).json(newReservation);
    } catch (error) {
