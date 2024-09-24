@@ -1,5 +1,6 @@
 import express from "express";
 import knex from "../database_client.js";
+import { getTableSchema, validParam } from "../valid_data.js";
 
 const reservationsRouter = express.Router();
 
@@ -14,17 +15,9 @@ reservationsRouter.get("/", async (req, res) => {
 });
 
 //Adds a new reservation to the database
-const validParam = (reservation) => {
-   const { number_of_guests, contact_phonenumber, contact_name, contact_email } = reservation;
-   if(!number_of_guests || typeof number_of_guests !== "number") return ('Invalid number_of_guests');
-   if(!contact_phonenumber|| typeof contact_phonenumber !== "string") return ('Invalid contact_phonenumber');
-   if(!contact_name || typeof contact_name !== "string") return ('Invalid contact_name');
-   if(!contact_email || typeof contact_email !== "string") return ('Invalid contact_email');
-   return null
- }
-
 reservationsRouter.post("/", async (req, res) => {
-   const validError = validParam(req.body);
+   const dataSchema = await getTableSchema("reservation"); 
+   const validError = validParam(req.body, dataSchema);
    const existedReservation = await knex('reservation').where({ contact_name: req.body.contact_name}).first()
    
    try {
@@ -54,7 +47,7 @@ reservationsRouter.get("/:id", async (req, res) => {
          res.status(404).json({ message: "Reservation can't find" });
       } 
    } catch (error) {
-      res.status(404).json({ error: error.message });
+      res.status(500).json({ error: error.message });
    }
  });
 
@@ -71,7 +64,7 @@ try {
       res.status(404).json({ message: "Reservation can't find" });
    } 
 } catch (error) {
-   res.status(404).json({ error: error.message });
+   res.status(500).json({ error: error.message });
 }
 });
 
@@ -86,7 +79,7 @@ reservationsRouter.delete("/:id", async (req, res) => {
          res.status(404).json({ message: "Reservation can't find" });
       } 
    } catch (error) {
-      res.status(404).json({ error: error.message });
+      res.status(500).json({ error: error.message });
    }
  });
 
