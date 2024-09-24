@@ -19,7 +19,7 @@ mealsRouter.get("/", async (req, res) => {
   
       let query = knex("meal").select("*");
 
-      let queryAvailableReservations = knex('meal')
+      const queryAvailableReservations = knex('meal')
       .select('meal.*')
       .leftJoin('reservation', 'meal.id', 'reservation.meal_id')
       .groupBy('meal.id');
@@ -30,13 +30,14 @@ mealsRouter.get("/", async (req, res) => {
       }
       
       //Returns all meals that still have available spots left, if true. If false, return meals that have no available spots left.1	api/meals?availableReservations=true
-
-      if (availableReservations === 'true') {
-         query = queryAvailableReservations
-         .havingRaw('SUM(reservation.number_of_guests) < meal.max_reservations');
-      } else if (availableReservations === 'false') {
-         query = queryAvailableReservations
-         .havingRaw('SUM(reservation.number_of_guests) >= meal.max_reservations');
+      switch (availableReservations){
+         case true:
+            query = queryAvailableReservations
+            .havingRaw('SUM(reservation.number_of_guests) < meal.max_reservations');
+            break;
+         case false:
+            query = queryAvailableReservations
+            .havingRaw('SUM(reservation.number_of_guests) >= meal.max_reservations');
       }
 
       //Returns all meals that partially match the given title
