@@ -6,6 +6,7 @@ import knex from "./database_client.js";
 import mealsRouter from "./routers/meals.js";
 import reservationsRouter from "./routers/reservations.js";
 import reviewsRouter from "./routers/reviews.js";
+import reservationsmealRouter from "./routers/reservationsmeal.js";
 
 const app = express();
 app.use(cors());
@@ -27,6 +28,7 @@ app.use("/api", apiRouter);
 apiRouter.use("/meals", mealsRouter);
 apiRouter.use("/reservations", reservationsRouter);
 apiRouter.use("/reviews", reviewsRouter);
+apiRouter.use("/reservationsmeal", reservationsmealRouter)
 
 app.listen(process.env.PORT, () => {
   console.log(`API listening on port ${process.env.PORT}`);
@@ -62,3 +64,14 @@ app.get("/all-meals", async (req, res) => {
       res.send([]);
   }
 });
+
+const testConnection = async () => {
+  try {
+    const result = await knex.raw("SELECT 1+1 as result");
+    console.log(result);
+  } catch (error) {
+    console.error("Error connecting to database:", error);
+  }
+};
+
+testConnection();

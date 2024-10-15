@@ -8,8 +8,22 @@ const reviewsRouter = express.Router();
 // Get all reviews
 reviewsRouter.get("/", async (req, res) => {
   try {
-    const reviews = await knex.select("*").from("review");
-    res.json(reviews);
+   const { averageStars } = req.query;
+   let query = knex("review").select("*");
+
+   if (averageStars) {
+      const mealsWithAverageStars = await knex("review")
+        .select("meal_id")
+        .avg("stars as average_stars")
+        .groupBy("meal_id");
+      return res.json(mealsWithAverageStars);
+    }
+
+    const reviews = await query;
+    if (reviews.length === 0) {
+      return res.status(404).send("No reviews found for the given criteria");
+    }
+   res.json(reviews);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -24,11 +38,11 @@ reviewsRouter.post("/", async (req, res) => {
 
    try {
       if(validError) {
-         return res.status(404).json({ message: validError });
+         return res.status(400).json({ message: validError });
       }
       
       if(existedReview) {
-         return res.status(404).json({ message: 'Review with this title was existed' });
+         return res.status(409).json({ message: 'Review with this title was existed' });
       }
 
       const [newReview] = await knex('review').insert(req.body);

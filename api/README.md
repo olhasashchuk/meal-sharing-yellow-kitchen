@@ -1,128 +1,100 @@
-# The API package
+# Yellow Kitchen API
 
-This package sets up a [Express](https://expressjs.com/) API server and a connection to a SQL database using [Knex](https://knexjs.org/).
+Welcome to the **Yellow Kitchen** API, a backend service for the meal-sharing application built with **Node.js**, **Express**, **Knex**, and **MySQL**. This API allows users to manage meals, reservations, and reviews efficiently.
 
-For development you can run the command `npm run dev` which uses `nodemon` to watch files and restarts the server when a change happens.  
-You can visit [http://localhost:3001/api](http://localhost:3001/api) which will test the connection to the database.
+## Features
 
-There is no build step so when deploying it is enough to run `npm run start`.
+- **Meal Management**: Create, read, update, and delete meals.
+- **Reservations**: Make reservations for meals and manage them.
+- **Reviews**: Add and manage reviews for meals.
+- **Filtering & Sorting**: Filter and sort meals based on various criteria.
 
-## Environment variables
+## Technologies Used
 
-You can set environment variables in the `.env` file or in the Render.com environment variables section.  
-When you start a fresh project, make sure to copy the `.env` file by using `cp .env-example .env`.
+- **Node.js**: JavaScript runtime for building server-side applications.
+- **Express**: Web framework for Node.js to build APIs.
+- **Knex.js**: SQL query builder for Node.js.
+- **MySQL**: Database management system.
+- **dotenv**: Module to manage environment variables.
+- **CORS**: Middleware for enabling Cross-Origin Resource Sharing.
 
-## Database clients
+## Getting Started
 
-The package comes installed with both a MySQL client for local development and a PostgreSQL client to use on [Render.com](https://render.com).  
-You can change which client to use by changing the `DB_CLIENT` environment variable (either `mysql2` or `pg`).
+To run the Yellow Kitchen API locally, follow these steps:
 
-## Database managed with code
+1. Clone the repository:
+git clone https://github.com/yourusername/yellow-kitchen-api.git
 
-You can get far with a simple `.sql` file to manage your database but if you'd prefer to manage your database with Knex, you can use [Knex Migrations](https://knexjs.org/guide/migrations.html) to set up your schema (as well as rollback schema changes across versions).  
-You can also use [Knex Seeds](https://knexjs.org/guide/migrations.html#seed-files) to populate your database with data.  
-Combined, these two techniques make it very easy to experiment with changes to your database or recover your database if something happens to it.  
-It also makes it possible to share temporary schema changes with others during Pull Request testing.
+2. Navigate into the project directory:
+cd api
 
-## Deploying
+3. Install dependencies:
+npm install
 
-> Last tested: 2024-04-11
+4. Create a `.env` file in the root directory and configure your database connection:
+DB_CLIENT=mysql DB_HOST=localhost DB_USER=your_db_user DB_PASSWORD=your_db_password DB_NAME=your_db_name PORT=3001
 
-### Deploying a PostgreSQL database
+markdown
+Copy code
+5. Start the server:
+npm start
 
-From your Render.com Dashboard page, click the tile called PostGreSQL.
+markdown
+Copy code
 
-![](../images/render/database/step1.png)
+The server will start running on `http://localhost:3001`.
 
-In the next screen, fill in the marked fields, then scroll down.
+## API Endpoints
 
-![](../images/render/database/step2.png)
+### Meals
+- `GET /api/meals`: Retrieve all meals with optional filters.
+- `POST /api/meals`: Create a new meal.
+- `GET /api/meals/:id`: Get a meal by ID.
+- `PUT /api/meals/:id`: Update a meal by ID.
+- `DELETE /api/meals/:id`: Delete a meal by ID.
 
-Select the "Free" tier. Then click "Create".
+### Reservations
+- `GET /api/reservations`: Retrieve all reservations.
+- `POST /api/reservations`: Create a new reservation.
+- `GET /api/reservations/:id`: Get a reservation by ID.
+- `PUT /api/reservations/:id`: Update a reservation by ID.
+- `DELETE /api/reservations/:id`: Delete a reservation by ID.
 
-> Your database will be automatically deleted after 90 days, if you need it for longer simply recreate it following the same steps.
+### Reviews
+- `GET /api/reviews`: Retrieve all reviews or filter by average stars.
+- `POST /api/reviews`: Create a new review.
+- `GET /api/meals/:mealId/reviews`: Get all reviews for a specific meal.
+- `GET /api/reviews/:id`: Get a review by ID.
+- `PUT /api/reviews/:id`: Update a review by ID.
+- `DELETE /api/reviews/:id`: Delete a review by ID.
 
-![](../images/render/database/step3.png)
+## Data Models
 
-On the next page, scroll down to the section "Connections".
+### Meal
+- `id`: Integer, Primary Key
+- `title`: String, Meal title
+- `price`: Float, Meal price
+- `when`: DateTime, Date and time of the meal
+- `max_reservations`: Integer, Maximum number of reservations
 
-![](../images/render/database/step4.png)
+### Reservation
+- `id`: Integer, Primary Key
+- `contact_name`: String, Name of the contact person
+- `contact_email`: String, Email of the contact person
+- `contact_phonenumber`: String, Phone number of the contact person
+- `total_amount`: Float, Total amount for the reservation
 
-We need to copy the the following fields:
+### Review
+- `id`: Integer, Primary Key
+- `meal_id`: Integer, Foreign Key (references Meal)
+- `title`: String, Title of the review
+- `stars`: Integer, Rating (1-5)
+- `comment`: String, Review comment
 
-- Port
-- Database
-- Username
-- Password
-- External Database URL
+## Contributing
 
-We can put these into our `.env` file to test our database locally.
+Contributions are welcome! If you encounter any bugs or have suggestions for improvements, please open an issue or submit a pull request.
 
-It's important to note that we need to extract only the host name from "External Database URL".  
-If the value you copied was:
+## Contact
 
-> postgres://my_user:EiwuEVDpdGzoDRXTquSSXNMHoVmCh1qG@dpg-cobfi7i1hbls73e0dkt0-a.frankfurt-postgres.render.com/my_database_u9be
-
-Then what you want to extract is:
-
-> dpg-cobfi7i1hbls73e0dkt0-a.frankfurt-postgres.render.com
-
-Your `.env` file should look something like this in the end:
-
-```
-PORT=3001
-
-DB_CLIENT=pg
-DB_HOST=dpg-cobfi7i1hbls73e0dkt0-a.frankfurt-postgres.render.com
-DB_PORT=5432
-DB_USER=my_user
-DB_PASSWORD=EiwuEVDpdGzoDRXTquSSXNMHoVmCh1qG
-DB_DATABASE_NAME=my_database_u9be
-```
-
-You can run `npm run dev` and visit `http://localhost:3001/api` to verify that your local API server is able to connect to your database on Render.com.
-
-> You can use the same variables to connect to the database using a PostgreSQL management tool (such as [pgAdmin](https://www.pgadmin.org/)) to test and setup your database.
-
-### Deploying an API server
-
-If you go back to your Dashboard you should now see your database in your list of deployed services. From here click "New" and then select "Web Service".
-
-![](../images/render/api/step5.png)
-![](../images/render/api/step6.png)
-
-We want to deploy from a Git repository, this is called GitOps. Each time we push a new commit to the Git repository, Render will update your deployed service.
-
-![](../images/render/api/step7.png)
-
-If you cannot find your Git repository, you may need to re-configure your Github account to allow Render to see the repository you want to deploy from.
-
-![](../images/render/api/step8.png)
-
-Click "Connect" for the repository you want to use (the one that is based on this template).
-
-![](../images/render/api/step9.png)
-
-In the next page, fill in all the required fields.
-
-![](../images/render/api/step10.png)
-![](../images/render/api/step11.png)
-
-When you reach the section about "Environment variables", click the button called "Add from .env" which opens a dialog. You can copy the content of your `.env` file into this dialog (except for the PORT variable), then click "Add variables".
-
-![](../images/render/api/step12.png)
-![](../images/render/api/step13.png)
-
-The page should look something like this after.  
-It's important here to change the value of the variable DB_USE_SSL from "false" to "true".  
-Finish up by clicking "Create Web Service".
-
-![](../images/render/api/step14.png)
-
-In the next screen you'll see the output of your build step which is downloading your code and deploying it.
-
-![](../images/render/api/step15.png)
-
-Once you see the text "Your service is live" you can test your API with Postman by using the deployed URL, which should be something like `https://hyf-template-api.onrender.com/api`. You should see the output from the database.
-
-Next, let's deploy the web app by following the steps [here](../app/README.md#deploying).
+If you have any questions or need further assistance, feel free to reach out to me via GitHub.

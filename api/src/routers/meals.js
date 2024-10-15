@@ -19,26 +19,32 @@ mealsRouter.get("/", async (req, res) => {
   
       let query = knex("meal").select("*");
 
-      const queryAvailableReservations = knex('meal')
-      .select('meal.*')
-      .leftJoin('reservation', 'meal.id', 'reservation.meal_id')
-      .groupBy('meal.id');
-
       //Returns all meals that are cheaper than maxPrice
       if (maxPrice) {
         query = query.where("price", "<=", maxPrice);
       }
-      
-      //Returns all meals that still have available spots left, if true. If false, return meals that have no available spots left.1	api/meals?availableReservations=true
-      switch (availableReservations){
-         case true:
-            query = queryAvailableReservations
-            .havingRaw('SUM(reservation.number_of_guests) < meal.max_reservations');
-            break;
-         case false:
-            query = queryAvailableReservations
-            .havingRaw('SUM(reservation.number_of_guests) >= meal.max_reservations');
-      }
+   
+
+      if (availableReservations) {
+         const mealsWithAvailability = await knex("meal")
+           .leftJoin("reservation_meal", "meal.id", "reservation_meal.meal_id")
+           .select(
+             "meal.id",
+             "meal.title",
+             "meal.max_reservations",
+             knex.raw("COALESCE(SUM(reservation_meal.quantity), 0) AS reserved_quantity"),
+             knex.raw("(meal.max_reservations - COALESCE(SUM(reservation_meal.quantity), 0)) AS available_quantity")
+           )
+           .groupBy("meal.id", "meal.title", "meal.max_reservations");
+
+           const formattedMeals = mealsWithAvailability.map(meal => ({
+            ...meal,
+            reserved_quantity: Number(meal.reserved_quantity),
+            available_quantity: Number(meal.available_quantity)
+          }));
+    
+          return res.json(formattedMeals);
+       }
 
       //Returns all meals that partially match the given title
       if (title) {
@@ -64,7 +70,7 @@ mealsRouter.get("/", async (req, res) => {
   
       // Returns all meals sorted in the given direction. Only works combined with the sortKey and allows asc or desc.	api/meals?sortKey=price&sortDir=desc
        
-      const validQuery = ["when", "max_reservations", "price"];
+      const validQuery = ["when", "max_reservations", "price", "title"];
       const validDirection = ["ASC", "DESC"];
       
       if (sortKey && sortDir) {
@@ -76,7 +82,7 @@ mealsRouter.get("/", async (req, res) => {
           query = query.orderBy(sortKey);
         }
       }
-      
+     
       const meals = await query;
       
       // Check if any meals are found
