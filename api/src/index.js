@@ -64,3 +64,14 @@ app.get("/all-meals", async (req, res) => {
       res.send([]);
   }
 });
+
+const testConnection = async () => {
+  try {
+    const result = await knex.raw("SELECT 1+1 as result");
+    console.log(result);
+  } catch (error) {
+    console.error("Error connecting to database:", error);
+  }
+};
+
+testConnection();
