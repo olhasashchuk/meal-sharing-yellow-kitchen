@@ -67,6 +67,7 @@ export default function ReservationForm() {
       onSubmit={handleSubmit(handleFormSubmit)}
       noValidate
       autoComplete="off"
+      sx={{ marginBottom: 8 }}
     >
       <Typography
         gutterBottom
