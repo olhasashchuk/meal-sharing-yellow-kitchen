@@ -8,8 +8,16 @@ import reservationsRouter from "./routers/reservations.js";
 import reviewsRouter from "./routers/reviews.js";
 import reservationsmealRouter from "./routers/reservationsmeal.js";
 
+const corsOptions = {
+  origin: 'https://meal-sharing-yellow-kitchen.vercel.app',
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
+
 const app = express();
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 const apiRouter = express.Router();
@@ -64,14 +72,3 @@ app.get("/all-meals", async (req, res) => {
       res.send([]);
   }
 });
-
-const testConnection = async () => {
-  try {
-    const result = await knex.raw("SELECT 1+1 as result");
-    console.log(result);
-  } catch (error) {
-    console.error("Error connecting to database:", error);
-  }
-};
-
-testConnection();
