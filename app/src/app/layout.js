@@ -10,19 +10,19 @@ import Footer from "../../components/ui/Footer";
 import { Box } from "@mui/material";
 
 const poppinsLight = localFont({
-  src: "./fonts/Poppins-Light.woff",
+  src: "../../fonts/Poppins-Light.woff",
   variable: "--font-poppins-light",
   weight: "300",
 });
 
 const martelSansBold = localFont({
-  src: "./fonts/MartelSans-Bold.woff",
+  src: "../../fonts/MartelSans-Bold.woff",
   variable: "--font-martel-sans-bold",
   weight: "700",
 });
 
 const martelSansRegular = localFont({
-  src: "./fonts/MartelSans-Regular.woff",
+  src: "../../fonts/MartelSans-Regular.woff",
   variable: "--font-martel-sans-regular",
   weight: "400",
 });
