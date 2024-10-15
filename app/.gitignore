@@ -1,2 +1,22 @@
-node_modules
-dist
+# dependencies
+/node_modules
+
+# api
+.env.local
+
+# next.js
+/.next/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
