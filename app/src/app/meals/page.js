@@ -11,7 +11,6 @@ import { TitlePage } from "../../../components/ui/TitlePage";
 
 
 export const Meals = () => {
-  
   const { meals, loading: mealsLoading, error: mealsError } = useMeals();
   const [searchValue, setSearchValue] = useState('');
   const [sortingValue, setSortingValue] = useState('');
@@ -21,6 +20,7 @@ export const Meals = () => {
   if (mealsLoading || searchLoading || sortingLoading) {
     return <CircularProgress size="3rem" color="secondary" />;
   }
+
   if (mealsError || searchError || sortingError) {
     return <Typography color="error">{mealsError || searchError || sortingError}</Typography>;
   }
@@ -28,20 +28,29 @@ export const Meals = () => {
   let displayedMeals = meals;
 
   if (searchValue) {
+    console.log(searchingMeals)
     displayedMeals = searchingMeals;
-  } else if (sortingValue) {
+  } 
+  
+  if (sortingValue) {
     displayedMeals = sortingMeals;
   }
 
-
   return (
-
     <main>
       <Container style={{ marginTop: "6rem" }}>
         <TitlePage title="Meals of the day"/>
         <SearchForm setSearchValue={setSearchValue} />
         <SortingMeal setSortingValue={setSortingValue}/>
-        <MealsCards displayedMeals={displayedMeals} /> 
+        {searchLoading ? (
+            <CircularProgress size="3rem" color="secondary" />
+          ) : searchError ? (
+            <Typography color="error">{searchError}</Typography>
+          ) : displayedMeals.length > 0 ? (
+            <MealsCards displayedMeals={displayedMeals} />
+          ) : (
+            <Typography>Meals according to your request not found</Typography>
+        )}
       </Container>
     </main>
   );

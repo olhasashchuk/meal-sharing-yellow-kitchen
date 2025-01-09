@@ -124,7 +124,7 @@ export default function ReservationForm() {
             {...register("email", {
               required: "Email is required",
               pattern: {
-                value: /^\S+@\S+$/i,
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                 message: "Invalid email address",
               },
             })}

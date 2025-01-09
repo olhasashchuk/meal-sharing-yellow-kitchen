@@ -21,14 +21,21 @@ const CartModal = ({ open, handleClose }) => {
               ? availableSpots.find(mealItem => mealItem.id === cartMeal.meal.id)
               : null;
               return (
-                <List key={cartMeal.meal.id}>
+                <List 
+                  key={cartMeal.meal.id}  
+                >
                 <ListItem 
                   disablePadding 
-                  direction={{ xs: "column", md: "row" }}
                   sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
+                    alignItems: "center",
+                    width: "100%",
                     justifyContent: "space-between",
-                    alignItems: "center"
-                  }}>
+                    gap: { xs: 1, md: 8 }, 
+                    textAlign: "left",
+                  }}
+                  >
                   <img
                     src={cartMeal.meal.image}
                     alt={cartMeal.meal.title}
@@ -39,6 +46,7 @@ const CartModal = ({ open, handleClose }) => {
                     }}
                   />                  
                   <Typography>{cartMeal.meal.title}</Typography>
+                  
                   <Stack 
                     direction="row" 
                     spacing={1} 
@@ -68,6 +76,7 @@ const CartModal = ({ open, handleClose }) => {
                   </IconButton>
                 </ListItem>
                 </List>
+
               )
               })}   
             </>

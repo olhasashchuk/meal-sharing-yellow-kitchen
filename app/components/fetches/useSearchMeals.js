@@ -13,6 +13,9 @@ export const useSearchingMeals = ({ searchValue }) => {
       return;
     }
 
+    setLoading(true);
+    setError(null);
+
     const fetchSearchingMeals = async () => {
       try {
         if (searchValue) {

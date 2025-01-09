@@ -67,7 +67,7 @@ export default function ThemeProviderClient({ children }) {
     if (savedTheme !== null) {
       setIsDarkMode(JSON.parse(savedTheme));
     } else {
-      setIsDarkMode(true); 
+      setIsDarkMode(true);
     }
   }, []);
 

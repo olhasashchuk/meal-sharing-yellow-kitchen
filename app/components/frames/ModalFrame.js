@@ -7,10 +7,10 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 800,
+  maxWidth: 800,
   bgcolor: "background.paper",
-  border: "0px solid #FFFF",
-  bReservationRadius: 2,
+  border: "0px solid",
+  borderRadius: 2,
   boxShadow: 24,
   p: 4,
   overflow: "hidden",
@@ -25,7 +25,7 @@ export const ModalFrame = ({ open, handleClose, title, children }) => {
         <Stack 
           direction="row"  
           sx={{
-            justifyContent: "space-between",
+            justifyContent: "center",
             alignItems: "center",
             marginBottom: 4
           }}>

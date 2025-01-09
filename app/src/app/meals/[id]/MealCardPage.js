@@ -24,8 +24,7 @@ import { useAvailableSpots } from "../../../../components/contexts/AvailableSpot
 import { useReviewsAvgStars } from "../../../../components/fetches/useReviewsAvgStars";
 import ReviewCard from "../../../../components/reviews/ReviewCard";
 
-
-export default function MealCardPage() {
+const MealCardPage = () => {
   const params = useParams();
   const id = params.id;
   const { meal, loading, error } = useMeal(id);
@@ -67,7 +66,7 @@ export default function MealCardPage() {
   return (
     <>
       <Stack
-        direction="row"
+        direction={{ xs: "column", md: "row" }}
         divider={<Divider orientation="vertical" flexItem />}
         spacing={2}
         sx={{ paddingBottom: 8 }}
@@ -75,7 +74,7 @@ export default function MealCardPage() {
         <CardMedia
           sx={{
             height: 500,
-            flex: "50%",
+            flex: { md: 1 },
             border: "0px solid #ccc",
             borderRadius: "10px",
             boxShadow: 4,
@@ -83,7 +82,7 @@ export default function MealCardPage() {
           image={meal.image}
           title={meal.title}
         />
-        <Stack direction="column" spacing={1} sx={{ flex: "50%" }}>
+        <Stack direction="column" spacing={1} sx={{ flex: 1 }}>
           <CardContent sx={{ paddingBottom: 0, flex: "50%" }}>
             <Typography
               gutterBottom
@@ -205,3 +204,6 @@ export default function MealCardPage() {
     </>
   );
 }
+
+
+export default MealCardPage;
