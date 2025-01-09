@@ -1,0 +1,17 @@
+.logoContainer {
+  position: relative;
+  width: 184px;
+  height: 24px;
+}
+
+.logo::before {
+  background-color: rgba(255, 225, 69, 1);
+  content: "";
+  position: absolute;
+  top: 15px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 94px;
+  height: 13px;
+}

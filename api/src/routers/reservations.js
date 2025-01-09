@@ -15,26 +15,43 @@ reservationsRouter.get("/", async (req, res) => {
 });
 
 //Adds a new reservation to the database
+
 reservationsRouter.post("/", async (req, res) => {
+   const { contact_name, contact_email, contact_phonenumber, total_amount, meals } = req.body;
+
    const dataSchema = await getTableSchema("reservation"); 
    const validError = validParam(req.body, dataSchema);
-   const existedReservation = await knex('reservation').where({ contact_name: req.body.contact_name}).first()
+   const existedReservation = await knex('reservation').where({ contact_name }).first()
    
    try {
       if (validError) {
-         return res.status(404).json({ message: validError });
+         return res.status(400).json({ message: validError });
       }
 
       if (existedReservation) {
-         return res.status(404).json( { message: 'Reservation with this contact of name was existed' });
+         return res.status(400).json( { message: 'Reservation with this contact of name was registered' });
       }
       
-      const [newReservation] = await knex('reservation').insert(req.body);
-      res.status(201).json(newReservation);
+      const [newReservationId] = await knex('reservation').insert({ 
+         contact_name, 
+         contact_email, 
+         contact_phonenumber,
+         total_amount 
+      });
+
+      const mealData = meals.map((meal) => ({
+         reservation_id: newReservationId,
+         meal_id: meal.id,
+         quantity: meal.quantity,
+      }))
+
+      await knex('reservation_meal').insert(mealData);
+      res.status(201).json({ reservation_id: newReservationId });
    } catch (error) {
      res.status(500).json({ error: error.message });
    }
- });
+});
+
 
 // Returns the reservation by id
 reservationsRouter.get("/:id", async (req, res) => {
