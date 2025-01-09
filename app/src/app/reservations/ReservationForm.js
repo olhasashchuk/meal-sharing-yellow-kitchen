@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import {
   TextField,
   List,
@@ -17,6 +17,7 @@ import { useModal } from "../../../components/contexts/ModalContext";
 import ConfirmModal from "../../../components/ui/ConfirmModal";
 import { reservationSubmit } from "../../../components/fetches/reservationSubmit";
 import ErrorModal from "../../../components/ui/ErrorModal";
+import { MuiTelInput } from 'mui-tel-input'
 
 export default function ReservationForm() {
   const { open, handleOpen, handleClose } = useModal();
@@ -28,8 +29,10 @@ export default function ReservationForm() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     watch,
+    setValue,
   } = useForm();
 
   const contactData = watch();
@@ -133,26 +136,23 @@ export default function ReservationForm() {
             sx={{ m: 1 }}
           />
 
-          <TextField
-            error={!!errors.phone}
-            required
-            id="phone"
-            label="Phone"
-            defaultValue="123-456-7890"
-            {...register("phone", {
-              pattern: {
-                value: /^\d{3}-\d{3}-\d{4}$/,
-                message: "Phone number must be in the format 123-456-7890",
-              },
-              maxLength: {
-                value: 12,
-                message: "Phone number cannot be longer than 12 characters",
-              },
-              required: "Phone number is required",
-            })}
-            helperText={errors.phone ? errors.phone.message : ""}
-            fullWidth
-            sx={{ m: 1 }}
+          <Controller
+            name="phone"
+            control={control}
+            rules={{ required: "Phone number is required" }}
+            render={({ field }) => (
+              <MuiTelInput
+                {...field}
+                id="phone"
+                label="Phone"
+                required
+                error={!!errors.phone}
+                helperText={errors.phone ? errors.phone.message : ""}
+                defaultCountry="DK"
+                fullWidth
+                sx={{ m: 1 }}
+              />
+            )}
           />
         </Stack>
         <Stack sx={{ flex: 1 }}>
